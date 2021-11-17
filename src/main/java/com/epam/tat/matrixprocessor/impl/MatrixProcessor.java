@@ -44,15 +44,13 @@ public class MatrixProcessor implements IMatrixProcessor {
 	public double[][] multiplyMatrices(double[][] firstMatrix, double[][] secondMatrix) {
 		MatrixProcessorValidator.validateMatrix(firstMatrix);
 		MatrixProcessorValidator.validateMatrix(secondMatrix);
-		if (firstMatrix.length != secondMatrix[0].length) {
-			throw new MatrixProcessorException("can't multiply the matrices");
-		}
 		double[][] multiplication = new double[firstMatrix.length][secondMatrix[0].length];
 		for (int i = 0; i < firstMatrix.length; i++) {
 			for (int j = 0; j < secondMatrix[0].length; j++) {
 				for (int q = 0; q < firstMatrix[0].length; q++) {
-					multiplication[i][j] += BigDecimal.valueOf(firstMatrix[i][q] * secondMatrix[q][j])
-							.setScale(3, RoundingMode.UP)
+					multiplication[i][j] = BigDecimal
+							.valueOf(multiplication[i][j] + firstMatrix[i][q] * secondMatrix[q][j])
+							.setScale(3, RoundingMode.DOWN)
 							.doubleValue();
 				}
 			}
@@ -89,7 +87,7 @@ public class MatrixProcessor implements IMatrixProcessor {
 				}
 				invertedMatrix[i][j] = BigDecimal
 						.valueOf(Math.pow(-1, (i + j)) * getMatrixDeterminant(minorMatrix) / determinant)
-						.setScale(3, RoundingMode.UP)
+						.setScale(3, RoundingMode.DOWN)
 						.doubleValue();
 			}
 		}
