@@ -39,12 +39,12 @@ public class MatrixProcessorValidator {
         }
     }
 
-    public static void validateForTranspose(double[][] squareMatrix) {
-        if (squareMatrix == null) {
+    public static void validateForTranspose(double[][] matrix) {
+        if (matrix == null) {
             throw new MatrixProcessorException("null as argument");
         }
-        if (squareMatrix.length <= 0 || squareMatrix.length >= 10) {
-            throw new MatrixProcessorException("number of matrix rows is not proper");
+        if (matrix.length <= 0 || matrix.length >= 10) {
+            throw new MatrixProcessorException("number of matrix rows is not proper -" + " " + matrix.length);
         }
     }
 }

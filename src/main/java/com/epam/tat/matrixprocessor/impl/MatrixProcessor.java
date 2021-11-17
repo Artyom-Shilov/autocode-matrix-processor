@@ -44,13 +44,18 @@ public class MatrixProcessor implements IMatrixProcessor {
 	public double[][] multiplyMatrices(double[][] firstMatrix, double[][] secondMatrix) {
 		MatrixProcessorValidator.validateMatrix(firstMatrix);
 		MatrixProcessorValidator.validateMatrix(secondMatrix);
+		if (firstMatrix[0].length != secondMatrix.length) {
+			throw new MatrixProcessorException("Unsupportable operation for such matrices");
+		}
 		double[][] multiplication = new double[firstMatrix.length][secondMatrix[0].length];
 		for (int i = 0; i < firstMatrix.length; i++) {
 			for (int j = 0; j < secondMatrix[0].length; j++) {
 				for (int q = 0; q < firstMatrix[0].length; q++) {
+					double element = BigDecimal.valueOf(firstMatrix[i][q] * secondMatrix[q][j])
+							.setScale(3, RoundingMode.HALF_UP).doubleValue();
 					multiplication[i][j] = BigDecimal
-							.valueOf(multiplication[i][j] + firstMatrix[i][q] * secondMatrix[q][j])
-							.setScale(3, RoundingMode.HALF_DOWN)
+							.valueOf(multiplication[i][j] + element)
+							.setScale(3, RoundingMode.HALF_UP)
 							.doubleValue();
 				}
 			}
