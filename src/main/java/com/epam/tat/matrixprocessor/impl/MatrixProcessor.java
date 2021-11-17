@@ -11,7 +11,7 @@ public class MatrixProcessor implements IMatrixProcessor {
 
 	@Override
 	public double[][] transpose(double[][] matrix) {
-		MatrixProcessorValidator.validateMatrix(matrix);
+		MatrixProcessorValidator.validateForTranspose(matrix);
 		double[][] transposedMatrix = new double[matrix[0].length][matrix.length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[i].length; j++) {
@@ -50,7 +50,7 @@ public class MatrixProcessor implements IMatrixProcessor {
 				for (int q = 0; q < firstMatrix[0].length; q++) {
 					multiplication[i][j] = BigDecimal
 							.valueOf(multiplication[i][j] + firstMatrix[i][q] * secondMatrix[q][j])
-							.setScale(3, RoundingMode.DOWN)
+							.setScale(3, RoundingMode.HALF_UP)
 							.doubleValue();
 				}
 			}
@@ -87,7 +87,7 @@ public class MatrixProcessor implements IMatrixProcessor {
 				}
 				invertedMatrix[i][j] = BigDecimal
 						.valueOf(Math.pow(-1, (i + j)) * getMatrixDeterminant(minorMatrix) / determinant)
-						.setScale(3, RoundingMode.DOWN)
+						.setScale(3, RoundingMode.HALF_UP)
 						.doubleValue();
 			}
 		}

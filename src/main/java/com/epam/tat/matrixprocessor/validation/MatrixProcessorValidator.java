@@ -38,4 +38,13 @@ public class MatrixProcessorValidator {
             }
         }
     }
+
+    public static void validateForTranspose(double[][] squareMatrix) {
+        if (squareMatrix == null) {
+            throw new MatrixProcessorException("null as argument");
+        }
+        if (squareMatrix.length <= 0 || squareMatrix.length >= 10) {
+            throw new MatrixProcessorException("number of matrix rows is not proper");
+        }
+    }
 }
