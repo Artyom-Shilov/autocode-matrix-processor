@@ -51,13 +51,15 @@ public class MatrixProcessor implements IMatrixProcessor {
 		for (int i = 0; i < firstMatrix.length; i++) {
 			for (int j = 0; j < secondMatrix[0].length; j++) {
 				for (int q = 0; q < firstMatrix[0].length; q++) {
-					double element = BigDecimal.valueOf(firstMatrix[i][q] * secondMatrix[q][j])
-							.setScale(3, RoundingMode.HALF_UP).doubleValue();
-					multiplication[i][j] = BigDecimal
-							.valueOf(multiplication[i][j] + element)
-							.setScale(3, RoundingMode.HALF_UP)
-							.doubleValue();
+					multiplication[i][j] += firstMatrix[i][q] * secondMatrix[q][j];
 				}
+			}
+		}
+		for (int i = 0; i < multiplication.length; i++) {
+			for (int j = 0; j < multiplication[i].length; j++){
+				multiplication[i][j] = BigDecimal.valueOf(multiplication[i][j])
+						.setScale(3, RoundingMode.HALF_UP)
+						.doubleValue();
 			}
 		}
 		return multiplication;
