@@ -50,7 +50,7 @@ public class MatrixProcessor implements IMatrixProcessor {
 				for (int q = 0; q < firstMatrix[0].length; q++) {
 					multiplication[i][j] = BigDecimal
 							.valueOf(multiplication[i][j] + firstMatrix[i][q] * secondMatrix[q][j])
-							.setScale(3, RoundingMode.HALF_UP)
+							.setScale(3, RoundingMode.HALF_DOWN)
 							.doubleValue();
 				}
 			}
