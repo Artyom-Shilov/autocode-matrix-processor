@@ -1,90 +1,128 @@
 package com.epam.tat.matrixprocessor.impl;
 
 import com.epam.tat.matrixprocessor.IMatrixProcessor;
+import com.epam.tat.matrixprocessor.exception.MatrixProcessorException;
+import com.epam.tat.matrixprocessor.validation.MatrixProcessorValidator;
 
-/**
- * Function Description:
- * Complete the functions below. All methods must work with matrices of the double type.
- *
- * Constraints:
- * 0 < m < 10
- * 0 < n < 10
- * where m - number of rows in matrix
- * where n - number of columns in matrix
- *
- * In case of incorrect input values or inability to perform a calculation, the method should throw an appropriate
- * exception.
- *
- */
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class MatrixProcessor implements IMatrixProcessor {
 
-	/**
-	 * Matrix transpose is an operation on a matrix where its rows become columns with the same numbers.
-	 * Ex.:
-	 * |1 2|			|1 3 5|
-	 * |3 4|   ====>	|2 4 6|
-	 * |5 6|
-	 *
-	 * @param matrix - matrix for transposition
-	 * @return the transposed matrix
-	 */
 	@Override
 	public double[][] transpose(double[][] matrix) {
-		throw new UnsupportedOperationException("You need to implement this method");
+		MatrixProcessorValidator.validateMatrix(matrix);
+		double[][] transposedMatrix = new double[matrix[0].length][matrix.length];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				transposedMatrix[j][i] = matrix[i][j];
+			}
+		}
+		return transposedMatrix;
 	}
 
-	/**
-	 * The method flips the matrix clockwise.
-	 * Ex.:
-	 * * |1 2|			|5 3 1|
-	 * * |3 4|   ====>	|6 4 2|
-	 * * |5 6|
-	 *
-	 * @param matrix - rotation matrix
-	 * @return rotated matrix
-	 */
 	@Override
-	public double[][] turnClockwise(double[][] matrix) {
-		throw new UnsupportedOperationException("You need to implement this method");
+	public double[][] turnClockwise(double[][] matrix) throws MatrixProcessorException {
+		MatrixProcessorValidator.validateMatrix(matrix);
+		double[][] transposedMatrix;
+		transposedMatrix = transpose(matrix);
+		if (transposedMatrix[0].length == 1) {
+			return transposedMatrix;
+		}
+		double c;
+		for (int i = 0; i < transposedMatrix.length; i++) {
+			for (int j = 0; j < transposedMatrix[0].length / 2; j++) {
+				c = transposedMatrix[i][j];
+				transposedMatrix[i][j] = transposedMatrix[i][transposedMatrix[0].length - 1 - j];
+				transposedMatrix[i][transposedMatrix[0].length - 1 - j] = c;
+			}
+		}
+		return transposedMatrix;
 	}
 
-	/**
-	 * This method multiplies matrix firstMatrix by matrix secondMatrix
-	 *
-	 * See {https://en.wikipedia.org/wiki/Matrix_multiplication}
-	 *
-	 * @param firstMatrix  - first matrix to multiply
-	 * @param secondMatrix - second matrix to multiply
-	 * @return result matrix
-	 */
 	@Override
 	public double[][] multiplyMatrices(double[][] firstMatrix, double[][] secondMatrix) {
-		throw new UnsupportedOperationException("You need to implement this method");
+		MatrixProcessorValidator.validateMatrix(firstMatrix);
+		MatrixProcessorValidator.validateMatrix(secondMatrix);
+		if (firstMatrix.length != secondMatrix[0].length) {
+			throw new MatrixProcessorException("can't multiply the matrices");
+		}
+		double[][] multiplication = new double[firstMatrix.length][secondMatrix[0].length];
+		for (int i = 0; i < firstMatrix.length; i++) {
+			for (int j = 0; j < secondMatrix[0].length; j++) {
+				for (int q = 0; q < firstMatrix[0].length; q++) {
+					multiplication[i][j] += BigDecimal.valueOf(firstMatrix[i][q] * secondMatrix[q][j])
+							.setScale(3, RoundingMode.UP)
+							.doubleValue();
+				}
+			}
+		}
+		return multiplication;
 	}
 
-	/**
-	 * This method returns the inverse of the matrix
-	 *
-	 * See {https://en.wikipedia.org/wiki/Invertible_matrix}
-	 *
-	 * @param matrix - input matrix
-	 * @return inverse matrix for input matrix
-	 */
 	@Override
 	public double[][] getInverseMatrix(double[][] matrix) {
-		throw new UnsupportedOperationException("You need to implement this method");
+		double determinant = getMatrixDeterminant(matrix);
+		double[][] invertedMatrix = new double[matrix.length][matrix.length];
+		if (getMatrixDeterminant(matrix) == 0) {
+			throw new MatrixProcessorException("determinant is zero, there is infinite number of solutions");
+		}
+		double[][] transposedMatrix = transpose(matrix);
+		for (int i = 0; i < transposedMatrix.length; i++) {
+			for (int j = 0; j < transposedMatrix.length; j++) {
+				double[][] minorMatrix = new double[transposedMatrix.length - 1][transposedMatrix.length - 1];
+				for (int a = 0; a < transposedMatrix.length; a++) {
+					for (int b = 0; b < transposedMatrix.length; b++) {
+						if (a < i && b < j) {
+							minorMatrix[a][b] = transposedMatrix[a][b];
+						}
+						if (a < i && b > j) {
+							minorMatrix[a][b - 1] = transposedMatrix[a][b];
+						}
+						if (a > i && b < j) {
+							minorMatrix[a - 1][b] = transposedMatrix[a][b];
+						}
+						if (a > i && b > j) {
+							minorMatrix[a - 1][b - 1] = transposedMatrix[a][b];
+						}
+					}
+				}
+				invertedMatrix[i][j] = BigDecimal
+						.valueOf(Math.pow(-1, (i + j)) * getMatrixDeterminant(minorMatrix) / determinant)
+						.setScale(3, RoundingMode.UP)
+						.doubleValue();
+			}
+		}
+		return invertedMatrix;
 	}
 
-	/**
-	 * This method returns the determinant of the matrix
-	 *
-	 * See {https://en.wikipedia.org/wiki/Determinant}
-	 *
-	 * @param matrix - input matrix
-	 * @return determinant of input matrix
-	 */
 	@Override
 	public double getMatrixDeterminant(double[][] matrix) {
-		throw new UnsupportedOperationException("You need to implement this method");
+		MatrixProcessorValidator.validateSquareMatrix(matrix);
+		double[][] minorMatrix;
+		double determinant = 0;
+		if (matrix.length == 1) {
+			determinant = matrix[0][0];
+			return determinant;
+		} else if (matrix.length == 2) {
+			determinant = ((matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]));
+			return determinant;
+		} else {
+			for (int i = 0; i < matrix[0].length; i++) {
+				minorMatrix = new double[matrix.length - 1][matrix[0].length - 1];
+				for (int j = 0; j < matrix.length; j++) {
+					for (int q = 1; q < matrix[0].length; q++) {
+						if (j > i) {
+							minorMatrix[j - 1][q - 1] = matrix[j][q];
+						}
+						if (j < i) {
+							minorMatrix[j][q - 1] = matrix[j][q];
+						}
+					}
+				}
+				determinant += matrix[i][0] * Math.pow(-1, i) * getMatrixDeterminant(minorMatrix);
+			}
+		}
+		return (determinant);
 	}
 }
